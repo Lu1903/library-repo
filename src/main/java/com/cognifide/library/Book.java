@@ -1,6 +1,5 @@
 package com.cognifide.library;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -18,7 +17,7 @@ public class Book {
 	private Boolean quoteSharingAllowed;
 
 	public Book() {
-		
+		//need empty constructor
 	}
 
 	public String getKind() {
