@@ -22,16 +22,16 @@ public class ViewController {
     public String name;
 
 	@GetMapping
-    public String hello() throws Exception {
+    public List<Book> hello() throws Exception {
 		JSONObject jsonObject = (JSONObject) readJsonSimpleDemo(name);
         JSONArray goodArray=(JSONArray) jsonObject.get("items");
-		String booki ="";
 		ObjectMapper mapper = new ObjectMapper();
 		Book [] x = mapper.readValue(goodArray.toJSONString(), Book[].class);
+		List<Book> books = new ArrayList<>();
 		for(Book a : x) {
-			booki+=a.getVolumeInfo().getIndustryIdentifiers().get(0).getIdentifier();
+			books.add(a);
 		}
-		return booki;
+		return books;
 	}
 	
 	public static Object readJsonSimpleDemo(String filename) throws Exception {  
