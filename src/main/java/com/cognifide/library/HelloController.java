@@ -2,6 +2,7 @@ package com.cognifide.library;
 
 import java.io.File;
 import java.io.FileReader;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,12 +103,91 @@ public class HelloController {
 			return new ResponseEntity<Error>(HttpStatus.NOT_FOUND);
 		}
 	}
+	/*@RequestMapping(value = "/category/{someID}")
+	@ResponseBody
+	public List<ResponseEntity<?>> getBooksByCategory(@PathVariable("someID") String id) throws Exception {
+		Book [] list = getAListOfBooks();
+		List<Book> booksByCategory = new ArrayList<>();
+		for(Book book : list) {
+		if(doesObjectContainField(book, "categories")) {
+			for(String category : book.getVolumeInfo().getCategories()) {
+				if(category.equals(id)) {
+					booksByCategory.add(book);
+				}
+			}
+		}
+		}
+				
+		List<ResponseEntity<?>> returningbooks = new ArrayList<>();
+		if(booksByCategory.size()>0) {
+			List<ReturningBook> bookstoview = new ArrayList<ReturningBook>();
+			for(Book book : booksByCategory) {
+				bookstoview.add(new ReturningBook(book));
+			}
+			
+			for(ReturningBook book : bookstoview) {
+				returningbooks.add(new ResponseEntity<ReturningBook>(book, HttpStatus.OK));
+			}
+			return returningbooks;
+		}else {
+			return returningbooks;
+		}
+	}*/
     
+	@RequestMapping(value = "/category/{someID}")
+	@ResponseBody
+	public List<ReturningBook> getBooksByCategory(@PathVariable("someID") String id) throws Exception {
+		Book [] list = getAListOfBooks();
+		List<Book> booksByCategory = new ArrayList<>();
+		for(Book book : list) {
+		try {
+			for(String category : book.getVolumeInfo().getCategories()) {
+				if(category.equals(id)) {
+					booksByCategory.add(book);
+				}
+			}
+		}catch(NullPointerException e) {
+			
+		}
+		}
+				
+		//List<ResponseEntity<?>> returningbooks = new ArrayList<>();
+		if(booksByCategory.size()>0) {
+			List<ReturningBook> bookstoview = new ArrayList<ReturningBook>();
+			for(Book book : booksByCategory) {
+				bookstoview.add(new ReturningBook(book));
+			}
+			
+			//for(ReturningBook book : bookstoview) {
+			//	returningbooks.add(new ResponseEntity<ReturningBook>(book, HttpStatus.OK));
+			//}
+			return bookstoview;
+		}else {
+			return new ArrayList<ReturningBook>();
+		}
+		//return booksByCategory;
+	}
+	
     public Book[] getAListOfBooks() throws Exception {
     	JSONObject jsonObject = (JSONObject) readJsonSimpleDemo(name);
     	JSONArray goodArray=(JSONArray) jsonObject.get("items");
     	ObjectMapper mapper = new ObjectMapper();
     	Book [] listOfBooks = mapper.readValue(goodArray.toJSONString(), Book[].class);
     	return listOfBooks;
+    }
+    public static boolean doesObjectContainField(Object object, String fieldName) {
+    	Field[] fields = object.getClass().getDeclaredFields();
+    	List<String> actualFieldNames = getFieldNames(fields);
+        if(actualFieldNames.contains(fieldName)) {
+        	return true;
+        }else {
+        	return false;
+        }
+    }
+    private static List<String> getFieldNames(Field[] fields) {
+        List<String> fieldNames = new ArrayList<>();
+        for (Field field : fields)
+          fieldNames.add(field.getName());
+        return fieldNames;
     }
 }
